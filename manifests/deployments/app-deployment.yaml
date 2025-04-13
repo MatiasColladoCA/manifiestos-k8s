@@ -18,7 +18,7 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /usr/share/nginx/html
+            - mountPath: /mnt/static-content
               name: static-content
       volumes:
         - name: static-content
