@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app
+  name: app-deployment
 spec:
   replicas: 1
   selector:
@@ -13,14 +13,27 @@ spec:
         app: web-app
     spec:
       containers:
-        - name: nginx
-          image: nginx:latest
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - mountPath: /mnt/static-content
-              name: static-content
-      volumes:
+      - name: nginx-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
         - name: static-content
-          persistentVolumeClaim:
-            claimName: static-content-pvc
+          mountPath: /usr/share/nginx/html  # Montar acá los archivos estáticos
+      volumes:
+      - name: static-content
+        hostPath:
+          path: /mnt/static-content  # Directorio en Minikube donde están los archivos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-service
+spec:
+  selector:
+    app: web-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
